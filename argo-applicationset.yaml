@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: git@github.com:vnhirenko/argo-apps.git
+      revision: HEAD
+      files:
+      - path: "**/config.yaml"
+  template:
+    metadata:
+      name: '{{name}}' 
+    spec:
+      destination:
+        name: ''
+        namespace: '{{app_namespace}}'
+        server: '{{address}}'
+      sources:
+      - repoURL: "{{ repository.url }}"
+        targetRevision: HEAD
+        path: "{{ repository.path }}"
+        helm:
+          values: | 
+            {{app_values}}
+          valueFiles:
+          - $values/{{ name }}/values-tst.yaml
+      - repoURL: git@github.com:vnhirenko/argo-apps.git
+        targetRevision: HEAD
+        ref: values
+      project: default
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true

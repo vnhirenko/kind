@@ -83,4 +83,9 @@ spec:
                 port:
                   number: 80
 """ | kubectl apply -f -
+
+cp argo-key.yaml tmp.yaml && cat ~/.ssh/id_rsa | xargs -i echo "    {}" >> tmp.yaml; kubectl apply -f tmp.yaml; rm tmp.yaml
 ```
+
+## Install Applicationset
+`kubectl apply -f argo-applicationset.yaml`

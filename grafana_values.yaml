@@ -1,0 +1,17 @@
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  path: /
+  pathType: Prefix
+  hosts:
+    - grafana-server.llab.com
+
+datasources:
+ datasources.yaml:
+   apiVersion: 1
+   datasources:
+   - name: Prometheus
+     type: prometheus
+     url: http://prometheus-server
+     access: proxy
+     isDefault: true

@@ -1,18 +1,18 @@
 ## Create Cluster
-kind create cluster --config kind-cluster.yaml
+`kind create cluster --config kind-cluster.yaml`
 
 ## Deploy Metallb
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.9/config/manifests/metallb-native.yaml
-kubectl apply -f metallb-cm.yaml
+`kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.9/config/manifests/metallb-native.yaml`
+`kubectl apply -f metallb-cm.yaml`
 
 ## Deploy Mertics Server
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-kubectl patch deploy metrics-server -n kube-system --type='json'  -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/0", "value":"--kubelet-insecure-tls"}]'
+`kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml`
+`kubectl patch deploy metrics-server -n kube-system --type='json'  -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/0", "value":"--kubelet-insecure-tls"}]'`
 
 ## Deploy Nginx Ingress
-helm upgrade --install ingress-nginx ingress-nginx \
+`helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
-  --namespace ingress-nginx --create-namespace
+  --namespace ingress-nginx --create-namespace`
 
 ## add to hosts
 ```
@@ -30,16 +30,16 @@ fi
 done
 ```
 ## Install monitoring
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm install node-exporter bitnami/node-exporter
-helm upgrade -i prometheus prometheus-community/prometheus
-helm upgrade -i  grafana grafana/grafana
+`helm repo add bitnami https://charts.bitnami.com/bitnami`
+`helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
+`helm repo add grafana https://grafana.github.io/helm-charts`
+`helm repo update`
+`helm install node-exporter bitnami/node-exporter`
+`helm upgrade -i prometheus prometheus-community/prometheus`
+`helm upgrade -i  grafana grafana/grafana`
 
 ## Install cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+`kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml`
 ```
 echo """
 apiVersion: cert-manager.io/v1
@@ -52,8 +52,8 @@ spec:
 ```
 
 ## Install Argo
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+`kubectl create namespace argocd`
+`kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml`
 ```
 echo """
 apiVersion: networking.k8s.io/v1

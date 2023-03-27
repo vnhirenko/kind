@@ -15,7 +15,7 @@ helm upgrade --install ingress-nginx ingress-nginx \
   --namespace ingress-nginx --create-namespace
 
 ## add to hosts
-
+```
 myhosts="llab.com grafana-server.llab.com argocd.llab.com"
 ip=$(kubectl get svc nginx-ingress-controller-nginx-ingress -n ingress-nginx -ojson |jq -r .status.loadBalancer.ingress[0].ip)
 for myhost in $myhosts
@@ -28,7 +28,7 @@ else
 echo $toreplace | sudo tee -a /etc/hosts
 fi
 done
-
+```
 ## Install monitoring
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -40,7 +40,7 @@ helm upgrade -i  grafana grafana/grafana
 
 ## Install cert-manager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-
+```
 echo """
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -49,12 +49,12 @@ metadata:
 spec:
   selfSigned: {}
 """ | kubectl apply -f -
-
+```
 
 ## Install Argo
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
+```
 echo """
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -83,3 +83,4 @@ spec:
                 port:
                   number: 80
 """ | kubectl apply -f -
+```

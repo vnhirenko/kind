@@ -1,4 +1,4 @@
-# Kind and infra sutup
+# Kind and infra setup
 
 ## Create Cluster
 `kind create cluster --config kind-cluster.yaml`

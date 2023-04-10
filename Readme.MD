@@ -19,7 +19,7 @@
 ## add to hosts
 ```
 myhosts="llab.com grafana-server.llab.com argocd.llab.com"
-ip=$(kubectl get svc nginx-ingress-controller-nginx-ingress -n ingress-nginx -ojson |jq -r .status.loadBalancer.ingress[0].ip)
+ip=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -ojson |jq -r .status.loadBalancer.ingress[0].ip)
 for myhost in $myhosts
 do
 toreplace=$(echo "$ip $myhost")
@@ -91,3 +91,54 @@ cp argo-key.yaml tmp.yaml && cat ~/.ssh/id_rsa | xargs -i echo "    {}" >> tmp.y
 
 ## Install Applicationset
 `kubectl apply -f argo-applicationset.yaml`
+
+
+## Install CrossPlane
+
+```
+kubectl create namespace crossplane-system
+helm repo add crossplane-stable https://charts.crossplane.io/stable
+helm repo update
+
+helm install crossplane --namespace crossplane-system crossplane-stable/crossplane
+```
+
+## Install crossplane aws provider
+
+`BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id = MYID\naws_secret_access_key = MYKEY" | base64  | tr -d "\n")`
+
+```
+echo """
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws
+spec:
+  package: xpkg.upbound.io/crossplane-contrib/provider-aws:v0.33.0
+  packagePullPolicy: IfNotPresent
+  revisionActivationPolicy: Automatic
+  revisionHistoryLimit: 1
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-account-creds
+  namespace: crossplane-system
+type: Opaque
+data:
+  creds: $BASE64ENCODED_AWS_ACCOUNT_CREDS
+---
+apiVersion: aws.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: aws-account-creds
+      key: creds
+
+"""  | kubectl apply -f -
+```

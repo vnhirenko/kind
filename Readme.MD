@@ -17,6 +17,7 @@
   --namespace ingress-nginx --create-namespace`
 
 ## add to hosts
+
 ```
 myhosts="llab.com grafana-server.llab.com argocd.llab.com"
 ip=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -ojson |jq -r .status.loadBalancer.ingress[0].ip)
